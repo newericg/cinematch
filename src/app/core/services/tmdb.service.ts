@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, forkJoin, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import type {
   Movie,
@@ -25,18 +25,42 @@ export class TmdbService {
     anime = false
   ): Observable<Movie[]> {
     const endpoint = `${this.base}/discover/${type}`;
-    let params = new HttpParams()
-      .set('sort_by', 'popularity.desc')
-      .set('with_genres', genreIds.join(','))
-      .set('vote_count.gte', '50');
 
-    if (anime) {
-      params = params.set('with_original_language', 'ja');
-    }
+    const buildParams = (page: number): HttpParams => {
+      // Use '|' (OR) instead of ',' (AND) so a title only needs one matching genre
+      let params = new HttpParams()
+        .set('sort_by',        'popularity.desc')
+        .set('with_genres',    genreIds.join('|'))
+        .set('vote_count.gte', '20')
+        .set('page',           String(page));
 
-    return this.http
-      .get<PaginatedResponse<Movie>>(endpoint, { params })
-      .pipe(map(r => r.results));
+      if (anime) {
+        // Anime = Japanese animation; genre filter replaced by language + animation tag
+        params = params
+          .set('with_original_language', 'ja')
+          .set('with_genres',            '16');
+      }
+
+      return params;
+    };
+
+    // Fetch 3 pages in parallel → up to 60 results, deduplicated
+    return forkJoin([
+      this.http.get<PaginatedResponse<Movie>>(endpoint, { params: buildParams(1) }),
+      this.http.get<PaginatedResponse<Movie>>(endpoint, { params: buildParams(2) }),
+      this.http.get<PaginatedResponse<Movie>>(endpoint, { params: buildParams(3) }),
+    ]).pipe(
+      map(pages => {
+        const seen = new Set<number>();
+        return pages
+          .flatMap(p => p.results)
+          .filter(m => {
+            if (seen.has(m.id)) return false;
+            seen.add(m.id);
+            return true;
+          });
+      })
+    );
   }
 
   // ─── Search ─────────────────────────────────────────────────────────────────

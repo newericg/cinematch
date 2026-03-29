@@ -1,14 +1,35 @@
-<div class="mood-grid">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
   @for (mood of moods; track mood.id) {
     <button
-      class="mood-card"
-      [class.mood-card--active]="stateService.selectedMood()?.id === mood.id"
+      class="p-6 md:p-8 rounded-[4px] flex flex-col items-center text-center cursor-pointer transition-all duration-300 group"
+      [class.bg-[#0f1219]]="true"
+      [class.border]="true"
+      [class.border-[#e8b86d]]="stateService.selectedMood()?.id === mood.id"
+      [class.card-glow]="stateService.selectedMood()?.id === mood.id"
+      [class.-translate-y-0.5]="stateService.selectedMood()?.id === mood.id"
+      [class.shadow-2xl]="stateService.selectedMood()?.id === mood.id"
+      [class.border-transparent]="stateService.selectedMood()?.id !== mood.id"
+      [class.hover:bg-[#161a24]]="stateService.selectedMood()?.id !== mood.id"
+      [class.hover:shadow-xl]="stateService.selectedMood()?.id !== mood.id"
       (click)="selectMood(mood)"
       type="button"
     >
-      <span class="mood-card__emoji">{{ mood.emoji }}</span>
-      <span class="mood-card__label">{{ mood.label }}</span>
-      <span class="mood-card__desc">{{ mood.description }}</span>
+      <span
+        class="text-3xl mb-4 transition-transform duration-500"
+        [class.group-hover:scale-110]="stateService.selectedMood()?.id !== mood.id"
+      >{{ mood.emoji }}</span>
+
+      <h3
+        class="font-serif italic text-lg mb-2"
+        [class.text-[#e8b86d]]="stateService.selectedMood()?.id === mood.id"
+        [class.text-white]="stateService.selectedMood()?.id !== mood.id"
+      >{{ mood.label }}</h3>
+
+      <p
+        class="text-[10px] uppercase tracking-tighter leading-tight font-medium"
+        [class.text-[#e8b86d]/60]="stateService.selectedMood()?.id === mood.id"
+        [class.text-slate-500]="stateService.selectedMood()?.id !== mood.id"
+      >{{ mood.description }}</p>
     </button>
   }
 </div>

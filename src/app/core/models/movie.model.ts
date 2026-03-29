@@ -129,14 +129,14 @@ export interface AppState {
 
 // ─── Mood definitions ────────────────────────────────────────────────────────
 export const MOODS: MoodOption[] = [
-  { id: 'laugh',     emoji: '😂', label: 'Quero rir',           description: 'Comédias e filmes de família',         genreIds: [35, 10751] },
-  { id: 'cry',       emoji: '😭', label: 'Quero chorar',         description: 'Dramas e romances emocionantes',       genreIds: [18, 10749] },
-  { id: 'adrenaline',emoji: '🔥', label: 'Quero adrenalina',     description: 'Ação, aventura e ficção científica',   genreIds: [28, 12, 878] },
-  { id: 'scare',     emoji: '😱', label: 'Quero me assustar',    description: 'Terror e suspense',                    genreIds: [27, 53] },
-  { id: 'fantasy',   emoji: '🚀', label: 'Quero me perder',      description: 'Ficção científica e fantasia',         genreIds: [878, 14] },
-  { id: 'mystery',   emoji: '🧩', label: 'Quero um mistério',    description: 'Mistério e thriller',                  genreIds: [9648, 53] },
-  { id: 'love',      emoji: '💕', label: 'Quero me apaixonar',   description: 'Romance e dramas do coração',          genreIds: [10749, 18] },
-  { id: 'learn',     emoji: '🌍', label: 'Quero aprender',       description: 'Documentários e histórico',            genreIds: [99, 36] },
+  { id: 'nostalgic', emoji: '📼', label: 'Nostálgico',  description: 'Conforto e clássicos atemporais',      genreIds: [18, 36, 10751] },
+  { id: 'tense',     emoji: '🔪', label: 'Tenso',       description: 'Suspense de tirar o fôlego',           genreIds: [53, 27] },
+  { id: 'inspiring', emoji: '✨', label: 'Inspirador',  description: 'Histórias que transformam',             genreIds: [18, 36] },
+  { id: 'dark',      emoji: '🕯️', label: 'Sombrio',     description: 'O lado obscuro da sétima arte',        genreIds: [27, 80, 9648] },
+  { id: 'reflexive', emoji: '🪐', label: 'Reflexivo',   description: 'Filmes que exigem pensamento',          genreIds: [878, 18, 99] },
+  { id: 'fun',       emoji: '🍿', label: 'Divertido',   description: 'Entretenimento leve e vibrante',        genreIds: [35, 16, 10751] },
+  { id: 'complex',   emoji: '🧩', label: 'Complexo',    description: 'Roteiros intrincados e geniais',        genreIds: [9648, 53, 80] },
+  { id: 'elegant',   emoji: '🍷', label: 'Elegante',    description: 'Estética apurada e narrativa lenta',   genreIds: [10749, 18, 36] },
 ];
 
 export const ALL_GENRES: Genre[] = [

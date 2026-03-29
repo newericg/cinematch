@@ -1,10 +1,56 @@
-<section class="discover">
-  <!-- Content type filter -->
-  <div class="discover__type-bar">
+<!-- Hero Section -->
+<section class="relative mb-16">
+  <div class="max-w-3xl">
+    <p class="font-sans text-[10px] font-medium tracking-[0.2em] uppercase text-[#e8b86d] mb-4">
+      Recomendação Personalizada
+    </p>
+    <h2 class="font-serif text-5xl md:text-7xl leading-tight text-white mb-6">
+      O que você vai <br />
+      <span class="italic text-[#e8b86d]">assistir hoje?</span>
+    </h2>
+    <p class="text-slate-400 font-light text-lg max-w-xl leading-relaxed">
+      Explore uma seleção feita sob medida para o seu estado de espírito, gênero favorito
+      ou obras que ecoam o seu DNA cinematográfico.
+    </p>
+  </div>
+</section>
+
+<!-- Discovery Tabs -->
+<section class="mb-10">
+  <div class="flex gap-10 border-b border-white/5 pb-0">
+    @for (tab of tabs; track tab.id) {
+      <button
+        class="relative pb-4 font-sans font-medium text-sm tracking-widest uppercase transition-colors duration-200"
+        [class.text-slate-500]="stateService.activeTab() !== tab.id"
+        [class.hover:text-slate-300]="stateService.activeTab() !== tab.id"
+        [class.text-[#e8b86d]]="stateService.activeTab() === tab.id"
+        (click)="setTab(tab.id)"
+        type="button"
+      >
+        {{ tab.label }}
+        @if (stateService.activeTab() === tab.id) {
+          <span class="absolute bottom-0 left-0 w-full h-0.5 bg-[#e8b86d]"></span>
+        }
+      </button>
+    }
+  </div>
+</section>
+
+<!-- Discovery Content -->
+<section class="space-y-10">
+
+  <!-- Content Type Filter -->
+  <div class="flex items-center gap-3 flex-wrap">
     @for (ct of contentTypes; track ct.id) {
       <button
-        class="discover__type-btn"
-        [class.discover__type-btn--active]="stateService.contentType() === ct.id"
+        class="px-6 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all active:scale-95"
+        [class.bg-[#e8b86d]]="stateService.contentType() === ct.id"
+        [class.text-[#432c00]]="stateService.contentType() === ct.id"
+        [class.border]="stateService.contentType() !== ct.id"
+        [class.border-white/10]="stateService.contentType() !== ct.id"
+        [class.text-slate-400]="stateService.contentType() !== ct.id"
+        [class.hover:border-slate-500]="stateService.contentType() !== ct.id"
+        [class.hover:text-slate-200]="stateService.contentType() !== ct.id"
         (click)="setContentType(ct.id)"
         type="button"
       >
@@ -13,24 +59,8 @@
     }
   </div>
 
-  <!-- Tab nav -->
-  <div class="discover__tabs" role="tablist">
-    @for (tab of tabs; track tab.id) {
-      <button
-        class="discover__tab"
-        [class.discover__tab--active]="stateService.activeTab() === tab.id"
-        (click)="setTab(tab.id)"
-        role="tab"
-        [attr.aria-selected]="stateService.activeTab() === tab.id"
-        type="button"
-      >
-        {{ tab.label }}
-      </button>
-    }
-  </div>
-
-  <!-- Tab content -->
-  <div class="discover__panel" role="tabpanel">
+  <!-- Tab Panels -->
+  <div>
     @switch (stateService.activeTab()) {
       @case ('mood') {
         <app-mood-tab (search)="performSearch()" />
@@ -44,23 +74,66 @@
     }
   </div>
 
-  <!-- Results area -->
-  <div class="discover__results">
-    @if (stateService.loading()) {
-      <app-loading-skeleton [count]="8" />
-    } @else if (stateService.error()) {
-      <div class="discover__error">
-        <span class="discover__error-icon">⚠️</span>
-        <p>{{ stateService.error() }}</p>
-      </div>
-    } @else if (stateService.results().length > 0) {
-      <app-results [movies]="stateService.results()" [contentType]="stateService.contentType()" />
-    } @else if (!stateService.loading()) {
-      <div class="discover__empty">
-        <div class="discover__empty-graphic">🎬</div>
-        <h3>Pronto para descobrir?</h3>
-        <p>Escolha um humor, gênero ou título de referência para começar.</p>
-      </div>
-    }
-  </div>
+  <!-- CTA (shown when mood or genre is selected) -->
+  @if (stateService.activeTab() !== 'similar') {
+    <div class="flex justify-center pt-4 pb-8">
+      <button
+        class="bg-[#e8b86d] hover:bg-[#ffd598] text-[#432c00] font-bold text-sm tracking-[0.2em] uppercase px-10 py-5 rounded-[4px] flex items-center gap-3 transition-all active:scale-95 shadow-[0_10px_30px_rgba(232,184,109,0.2)] disabled:opacity-40 disabled:cursor-not-allowed"
+        (click)="performSearch()"
+        type="button"
+      >
+        Encontrar para mim
+        <span class="ms-icon text-lg">arrow_forward</span>
+      </button>
+    </div>
+  }
+
 </section>
+
+<!-- Results / Loading / Error / Featured -->
+<div class="mt-12">
+
+  @if (stateService.loading()) {
+    <app-loading-skeleton [count]="8" />
+
+  } @else if (stateService.error()) {
+    <div class="flex flex-col items-center gap-3 py-16 text-center">
+      <span class="text-4xl">⚠️</span>
+      <p class="text-slate-400">{{ stateService.error() }}</p>
+    </div>
+
+  } @else if (stateService.results().length > 0) {
+    <app-results [movies]="stateService.results()" [contentType]="stateService.contentType()" />
+
+  } @else {
+    <!-- Featured Section (shown when no results yet) -->
+    <section class="grid grid-cols-1 md:grid-cols-12 gap-12 mt-8">
+      <div class="md:col-span-7 aspect-[16/9] bg-[#191b21] rounded-[4px] overflow-hidden relative group">
+        <img
+          alt="Cinematic archive"
+          class="w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+          src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=900&q=80"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-[#111319] via-transparent to-transparent"></div>
+        <div class="absolute bottom-8 left-8">
+          <p class="text-[#e8b86d] font-sans text-[10px] tracking-widest uppercase mb-2">Destaque do Curador</p>
+          <h4 class="font-serif italic text-3xl text-white">O Cinema Além do Algoritmo</h4>
+        </div>
+      </div>
+      <div class="md:col-span-5 flex flex-col justify-center space-y-6 md:pl-8">
+        <h3 class="font-serif text-3xl text-white">Curadoria Humana</h3>
+        <p class="text-slate-400 font-light leading-relaxed">
+          Diferente das recomendações automáticas, nossa plataforma prioriza a conexão emocional.
+          Cada filme foi filtrado por entusiastas que entendem o peso de uma cena e o silêncio de um roteiro.
+        </p>
+        <a
+          class="text-[#e8b86d] text-xs font-bold uppercase tracking-widest border-b border-[#e8b86d]/30 pb-1 w-fit hover:border-[#e8b86d] transition-all"
+          href="#"
+        >
+          Saiba mais →
+        </a>
+      </div>
+    </section>
+  }
+
+</div>

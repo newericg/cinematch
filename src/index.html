@@ -1,18 +1,77 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!doctype html>
+<html class="dark" lang="pt-BR">
   <head>
     <meta charset="utf-8" />
-    <title>CineMatch — Descubra seu próximo favorito</title>
+    <title>CineMatch — The Digital Curator</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="CineMatch: recomendações personalizadas de filmes, séries e animes com base no seu humor ou gênero preferido." />
-    <meta name="theme-color" content="#080a0f" />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <!-- Preconnect for Google Fonts -->
+    <meta name="description" content="CineMatch: curadoria digital de filmes, séries e animes com base no seu estado de espírito." />
+    <meta name="theme-color" content="#111319" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-variant':             '#33353a',
+              'surface-dim':                 '#111319',
+              'background':                  '#111319',
+              'primary':                     '#ffd598',
+              'surface-container-lowest':    '#0c0e13',
+              'secondary':                   '#ffb3ae',
+              'outline-variant':             '#4f4538',
+              'on-secondary':                '#68000c',
+              'on-background':               '#e2e2e9',
+              'inverse-surface':             '#e2e2e9',
+              'surface-container':           '#1e1f25',
+              'on-surface':                  '#e2e2e9',
+              'surface-container-highest':   '#33353a',
+              'on-surface-variant':          '#d3c4b3',
+              'surface-bright':              '#37393f',
+              'surface-tint':                '#efbf73',
+              'on-primary':                  '#432c00',
+              'primary-fixed-dim':           '#efbf73',
+              'error-container':             '#93000a',
+              'surface':                     '#111319',
+              'primary-container':           '#e8b86d',
+              'on-primary-container':        '#694703',
+              'outline':                     '#9b8f7f',
+              'surface-container-high':      '#282a30',
+              'surface-container-low':       '#191b21',
+            },
+            fontFamily: {
+              'headline': ['Playfair Display', 'serif'],
+              'body':     ['DM Sans', 'sans-serif'],
+              'label':    ['DM Sans', 'sans-serif'],
+              'serif':    ['Playfair Display', 'serif'],
+              'sans':     ['DM Sans', 'sans-serif'],
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg:      '0.25rem',
+              xl:      '0.5rem',
+              full:    '0.75rem',
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .card-glow   { box-shadow: 0 0 25px rgba(232, 184, 109, 0.15); }
+      .text-glow   { text-shadow: 0 0 15px rgba(232, 184, 109, 0.3); }
+      .ms-icon     { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal;
+                     font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none;
+                     display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr;
+                     -webkit-font-smoothing: antialiased; }
+    </style>
   </head>
-  <body>
+  <body class="bg-[#111319] text-[#e2e2e9] antialiased selection:bg-[#e8b86d]/20 selection:text-[#e2e2e9]">
     <app-root></app-root>
   </body>
 </html>

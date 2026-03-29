@@ -30,8 +30,8 @@ export class DiscoverComponent {
 
   protected readonly tabs: { id: ActiveTab; label: string }[] = [
     { id: 'mood',    label: '😌 Humor' },
-    { id: 'genre',   label: '🎭 Gênero' },
-    { id: 'similar', label: '🔗 Similar' },
+    { id: 'genre',   label: '🎬 Gênero' },
+    { id: 'similar', label: '🔍 Similar a...' },
   ];
 
   protected readonly contentTypes: { id: ContentType; label: string }[] = [

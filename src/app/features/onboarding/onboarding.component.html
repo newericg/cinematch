@@ -11,205 +11,260 @@
       ></div>
     </div>
 
-    <!-- Header -->
-    <div class="flex items-center justify-between px-8 pt-7 pb-4">
-      <div>
-        <p class="text-[10px] font-medium tracking-[0.2em] uppercase text-[#e8b86d]">
-          Passo {{ step() }} de {{ totalSteps }}
-        </p>
-        <h2 class="font-serif text-2xl text-white mt-1">
-          @switch (step()) {
-            @case (1) { Quais gêneros você mais curte? }
-            @case (2) { O que prefere assistir? }
-            @case (3) { De qual época você gosta mais? }
-            @case (4) { Em quais plataformas você assiste? }
-            @case (5) { Qual nota mínima você aceita? }
-          }
-        </h2>
-      </div>
-      <button
-        class="text-slate-600 hover:text-slate-400 text-xs uppercase tracking-widest transition-colors"
-        (click)="skip()"
-        type="button"
-      >
-        Pular
-      </button>
-    </div>
+    <!-- ─── Step 6: Confirmation ─────────────────────────────────────────── -->
+    @if (step() === 6) {
+      <div class="px-8 pt-8 pb-10">
 
-    <!-- Body -->
-    <div class="px-8 pb-8 min-h-[260px]">
-
-      <!-- Step 1: Genres -->
-      @if (step() === 1) {
-        <p class="text-slate-500 text-sm mb-5">Selecione quantos quiser — usaremos para personalizar suas buscas.</p>
-        <div class="flex flex-wrap gap-2">
-          @for (genre of genres; track genre.id) {
-            <button
-              class="px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all active:scale-95"
-              [class.bg-[#e8b86d]]="selectedGenres().has(genre.id)"
-              [class.text-[#432c00]]="selectedGenres().has(genre.id)"
-              [class.border]="!selectedGenres().has(genre.id)"
-              [class.border-white/10]="!selectedGenres().has(genre.id)"
-              [class.text-slate-400]="!selectedGenres().has(genre.id)"
-              [class.hover:border-[#e8b86d]/40]="!selectedGenres().has(genre.id)"
-              [class.hover:text-[#e8b86d]]="!selectedGenres().has(genre.id)"
-              (click)="toggleGenre(genre.id)"
-              type="button"
-            >
-              {{ genre.name }}
-            </button>
-          }
+        <!-- Header -->
+        <div class="text-center mb-8">
+          <span class="text-4xl block mb-4">✨</span>
+          <p class="text-[10px] font-medium tracking-[0.2em] uppercase text-[#e8b86d] mb-2">Perfil criado com sucesso</p>
+          <h2 class="font-serif text-3xl text-white">Sua curadoria está pronta.</h2>
         </div>
-      }
 
-      <!-- Step 2: Content type -->
-      @if (step() === 2) {
-        <p class="text-slate-500 text-sm mb-6">Escolha o tipo de conteúdo padrão para suas recomendações.</p>
-        <div class="grid grid-cols-2 gap-3">
-          @for (opt of contentOptions; track opt.id) {
-            <button
-              class="p-6 rounded-[4px] border flex flex-col items-center gap-3 transition-all active:scale-95"
-              [class.border-[#e8b86d]]="selectedContent() === opt.id"
-              [class.bg-[#1a1c22]]="selectedContent() === opt.id"
-              [class.border-white/8]="selectedContent() !== opt.id"
-              [class.bg-[#0f1219]]="selectedContent() !== opt.id"
-              [class.hover:border-white/20]="selectedContent() !== opt.id"
-              (click)="selectedContent.set(opt.id)"
-              type="button"
-            >
-              <span class="text-3xl">{{ opt.emoji }}</span>
-              <span
-                class="font-serif italic text-lg"
-                [class.text-[#e8b86d]]="selectedContent() === opt.id"
-                [class.text-white]="selectedContent() !== opt.id"
-              >{{ opt.label }}</span>
-            </button>
-          }
-        </div>
-      }
+        <!-- Greeting -->
+        @if (geminiGreeting) {
+          <div class="bg-[#1a1c22] border border-[#e8b86d]/20 rounded-[4px] px-6 py-5 mb-8">
+            <p class="text-slate-300 text-sm leading-relaxed font-light italic text-center">
+              "{{ geminiGreeting }}"
+            </p>
+          </div>
+        }
 
-      <!-- Step 3: Decades -->
-      @if (step() === 3) {
-        <p class="text-slate-500 text-sm mb-6">Selecione quantas décadas quiser. Vazio = todas as épocas.</p>
-        <div class="grid grid-cols-3 gap-3">
-          @for (decade of decades; track decade.id) {
-            <button
-              class="py-5 rounded-[4px] border font-serif italic text-xl transition-all active:scale-95"
-              [class.border-[#e8b86d]]="selectedDecades().has(decade.id)"
-              [class.text-[#e8b86d]]="selectedDecades().has(decade.id)"
-              [class.bg-[#1a1c22]]="selectedDecades().has(decade.id)"
-              [class.border-white/8]="!selectedDecades().has(decade.id)"
-              [class.text-white]="!selectedDecades().has(decade.id)"
-              [class.bg-[#0f1219]]="!selectedDecades().has(decade.id)"
-              [class.hover:border-white/20]="!selectedDecades().has(decade.id)"
-              (click)="toggleDecade(decade.id)"
-              type="button"
-            >
-              {{ decade.label }}
-            </button>
-          }
-        </div>
-      }
-
-      <!-- Step 4: Streaming platforms -->
-      @if (step() === 4) {
-        <p class="text-slate-500 text-sm mb-6">Selecione onde você tem acesso. Vazio = sem filtro de plataforma.</p>
-        <div class="grid grid-cols-3 gap-3">
-          @for (p of platforms; track p.id) {
-            <button
-              class="py-5 rounded-[4px] border flex flex-col items-center gap-2 transition-all active:scale-95"
-              [class.border-[#e8b86d]]="selectedPlatforms().has(p.id)"
-              [class.bg-[#1a1c22]]="selectedPlatforms().has(p.id)"
-              [class.border-white/8]="!selectedPlatforms().has(p.id)"
-              [class.bg-[#0f1219]]="!selectedPlatforms().has(p.id)"
-              [class.hover:border-white/20]="!selectedPlatforms().has(p.id)"
-              (click)="togglePlatform(p.id)"
-              type="button"
-            >
-              <span class="text-2xl">{{ p.emoji }}</span>
-              <span
-                class="text-[11px] font-bold uppercase tracking-wider"
-                [class.text-[#e8b86d]]="selectedPlatforms().has(p.id)"
-                [class.text-slate-400]="!selectedPlatforms().has(p.id)"
-              >{{ p.name }}</span>
-            </button>
-          }
-        </div>
-      }
-
-      <!-- Step 5: Min rating -->
-      @if (step() === 5) {
-        <p class="text-slate-500 text-sm mb-6">Filtramos automaticamente títulos abaixo da nota escolhida.</p>
-        <div class="flex flex-col gap-3">
-          @for (opt of ratings; track opt.value) {
-            <button
-              class="px-6 py-4 rounded-[4px] border text-left flex items-center justify-between transition-all active:scale-95"
-              [class.border-[#e8b86d]]="selectedRating() === opt.value"
-              [class.bg-[#1a1c22]]="selectedRating() === opt.value"
-              [class.border-white/8]="selectedRating() !== opt.value"
-              [class.bg-[#0f1219]]="selectedRating() !== opt.value"
-              [class.hover:border-white/20]="selectedRating() !== opt.value"
-              (click)="selectedRating.set(opt.value)"
-              type="button"
-            >
-              <span
-                class="font-serif italic text-lg"
-                [class.text-[#e8b86d]]="selectedRating() === opt.value"
-                [class.text-white]="selectedRating() !== opt.value"
-              >{{ opt.label }}</span>
-              @if (selectedRating() === opt.value) {
-                <span class="ms-icon text-[#e8b86d] text-xl">check_circle</span>
+        <!-- AI Chips -->
+        @if (geminiSuggestions.length > 0) {
+          <div class="mb-8">
+            <p class="text-[10px] tracking-[0.25em] uppercase text-slate-600 text-center mb-4">Curadorias criadas para você</p>
+            <div class="flex flex-wrap justify-center gap-2">
+              @for (s of geminiSuggestions; track s.label) {
+                <span class="px-4 py-2 border border-[#e8b86d]/30 bg-[#e8b86d]/8 text-[#e8b86d] text-[11px] font-bold uppercase tracking-wider rounded-[4px]">
+                  {{ s.label }}
+                </span>
               }
-            </button>
-          }
+            </div>
+          </div>
+        }
+
+        <!-- CTA -->
+        <div class="flex flex-col items-center gap-3">
+          <button
+            class="w-full bg-[#e8b86d] hover:bg-[#ffd598] text-[#432c00] font-bold text-sm tracking-[0.15em] uppercase px-8 py-4 rounded-[4px] flex items-center justify-center gap-2 transition-all active:scale-95"
+            (click)="viewRecommendations()"
+            type="button"
+          >
+            <span class="ms-icon text-base">arrow_forward</span>
+            Ver minhas recomendações
+          </button>
+          <button
+            class="text-slate-600 hover:text-slate-400 text-xs uppercase tracking-widest transition-colors"
+            (click)="skip()"
+            type="button"
+          >
+            Ir para o início
+          </button>
         </div>
-      }
 
-    </div>
+      </div>
 
-    <!-- Footer nav -->
-    <div class="flex items-center justify-between px-8 pb-8">
+    <!-- ─── Steps 1–5 ────────────────────────────────────────────────────── -->
+    } @else {
 
-      @if (step() > 1) {
+      <!-- Header -->
+      <div class="flex items-center justify-between px-8 pt-7 pb-4">
+        <div>
+          <p class="text-[10px] font-medium tracking-[0.2em] uppercase text-[#e8b86d]">
+            Passo {{ step() }} de {{ totalSteps }}
+          </p>
+          <h2 class="font-serif text-2xl text-white mt-1">
+            @switch (step()) {
+              @case (1) { Quais gêneros você mais curte? }
+              @case (2) { O que prefere assistir? }
+              @case (3) { De qual época você gosta mais? }
+              @case (4) { Em quais plataformas você assiste? }
+              @case (5) { Qual nota mínima você aceita? }
+            }
+          </h2>
+        </div>
         <button
-          class="text-slate-500 hover:text-slate-300 text-sm uppercase tracking-widest transition-colors flex items-center gap-2"
-          (click)="back()"
+          class="text-slate-600 hover:text-slate-400 text-xs uppercase tracking-widest transition-colors"
+          (click)="skip()"
           type="button"
         >
-          <span class="ms-icon text-base">arrow_back</span>
-          Voltar
+          Pular
         </button>
-      } @else {
-        <span></span>
-      }
+      </div>
 
-      @if (step() < totalSteps) {
-        <button
-          class="bg-[#e8b86d] hover:bg-[#ffd598] text-[#432c00] font-bold text-sm tracking-[0.15em] uppercase px-8 py-3 rounded-[4px] flex items-center gap-2 transition-all active:scale-95"
-          (click)="next()"
-          type="button"
-        >
-          Continuar
-          <span class="ms-icon text-base">arrow_forward</span>
-        </button>
-      } @else {
-        <button
-          class="bg-[#e8b86d] hover:bg-[#ffd598] text-[#432c00] font-bold text-sm tracking-[0.15em] uppercase px-8 py-3 rounded-[4px] flex items-center gap-3 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-          (click)="finish()"
-          [disabled]="generating()"
-          type="button"
-        >
-          @if (generating()) {
-            <span class="w-4 h-4 border-2 border-[#432c00]/30 border-t-[#432c00] rounded-full animate-spin"></span>
-            Gerando perfil...
-          } @else {
-            <span class="ms-icon text-base">auto_awesome</span>
-            Criar meu perfil com IA
-          }
-        </button>
-      }
+      <!-- Body -->
+      <div class="px-8 pb-8 min-h-[260px]">
 
-    </div>
+        <!-- Step 1: Genres -->
+        @if (step() === 1) {
+          <p class="text-slate-500 text-sm mb-5">Selecione quantos quiser — usaremos para personalizar suas buscas.</p>
+          <div class="flex flex-wrap gap-2">
+            @for (genre of genres; track genre.id) {
+              <button
+                class="px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all active:scale-95"
+                [class.bg-[#e8b86d]]="selectedGenres().has(genre.id)"
+                [class.text-[#432c00]]="selectedGenres().has(genre.id)"
+                [class.border]="!selectedGenres().has(genre.id)"
+                [class.border-white/10]="!selectedGenres().has(genre.id)"
+                [class.text-slate-400]="!selectedGenres().has(genre.id)"
+                [class.hover:border-[#e8b86d]/40]="!selectedGenres().has(genre.id)"
+                [class.hover:text-[#e8b86d]]="!selectedGenres().has(genre.id)"
+                (click)="toggleGenre(genre.id)"
+                type="button"
+              >{{ genre.name }}</button>
+            }
+          </div>
+        }
+
+        <!-- Step 2: Content type -->
+        @if (step() === 2) {
+          <p class="text-slate-500 text-sm mb-6">Escolha o tipo de conteúdo padrão para suas recomendações.</p>
+          <div class="grid grid-cols-2 gap-3">
+            @for (opt of contentOptions; track opt.id) {
+              <button
+                class="p-6 rounded-[4px] border flex flex-col items-center gap-3 transition-all active:scale-95"
+                [class.border-[#e8b86d]]="selectedContent() === opt.id"
+                [class.bg-[#1a1c22]]="selectedContent() === opt.id"
+                [class.border-white/8]="selectedContent() !== opt.id"
+                [class.bg-[#0f1219]]="selectedContent() !== opt.id"
+                [class.hover:border-white/20]="selectedContent() !== opt.id"
+                (click)="selectedContent.set(opt.id)"
+                type="button"
+              >
+                <span class="text-3xl">{{ opt.emoji }}</span>
+                <span
+                  class="font-serif italic text-lg"
+                  [class.text-[#e8b86d]]="selectedContent() === opt.id"
+                  [class.text-white]="selectedContent() !== opt.id"
+                >{{ opt.label }}</span>
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Step 3: Decades -->
+        @if (step() === 3) {
+          <p class="text-slate-500 text-sm mb-6">Selecione quantas décadas quiser. Vazio = todas as épocas.</p>
+          <div class="grid grid-cols-3 gap-3">
+            @for (decade of decades; track decade.id) {
+              <button
+                class="py-5 rounded-[4px] border font-serif italic text-xl transition-all active:scale-95"
+                [class.border-[#e8b86d]]="selectedDecades().has(decade.id)"
+                [class.text-[#e8b86d]]="selectedDecades().has(decade.id)"
+                [class.bg-[#1a1c22]]="selectedDecades().has(decade.id)"
+                [class.border-white/8]="!selectedDecades().has(decade.id)"
+                [class.text-white]="!selectedDecades().has(decade.id)"
+                [class.bg-[#0f1219]]="!selectedDecades().has(decade.id)"
+                [class.hover:border-white/20]="!selectedDecades().has(decade.id)"
+                (click)="toggleDecade(decade.id)"
+                type="button"
+              >{{ decade.label }}</button>
+            }
+          </div>
+        }
+
+        <!-- Step 4: Streaming platforms -->
+        @if (step() === 4) {
+          <p class="text-slate-500 text-sm mb-6">Selecione onde você tem acesso. Vazio = sem filtro de plataforma.</p>
+          <div class="grid grid-cols-3 gap-3">
+            @for (p of platforms; track p.id) {
+              <button
+                class="py-5 rounded-[4px] border flex flex-col items-center gap-2 transition-all active:scale-95"
+                [class.border-[#e8b86d]]="selectedPlatforms().has(p.id)"
+                [class.bg-[#1a1c22]]="selectedPlatforms().has(p.id)"
+                [class.border-white/8]="!selectedPlatforms().has(p.id)"
+                [class.bg-[#0f1219]]="!selectedPlatforms().has(p.id)"
+                [class.hover:border-white/20]="!selectedPlatforms().has(p.id)"
+                (click)="togglePlatform(p.id)"
+                type="button"
+              >
+                <span class="text-2xl">{{ p.emoji }}</span>
+                <span
+                  class="text-[11px] font-bold uppercase tracking-wider"
+                  [class.text-[#e8b86d]]="selectedPlatforms().has(p.id)"
+                  [class.text-slate-400]="!selectedPlatforms().has(p.id)"
+                >{{ p.name }}</span>
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Step 5: Min rating -->
+        @if (step() === 5) {
+          <p class="text-slate-500 text-sm mb-6">Filtramos automaticamente títulos abaixo da nota escolhida.</p>
+          <div class="flex flex-col gap-3">
+            @for (opt of ratings; track opt.value) {
+              <button
+                class="px-6 py-4 rounded-[4px] border text-left flex items-center justify-between transition-all active:scale-95"
+                [class.border-[#e8b86d]]="selectedRating() === opt.value"
+                [class.bg-[#1a1c22]]="selectedRating() === opt.value"
+                [class.border-white/8]="selectedRating() !== opt.value"
+                [class.bg-[#0f1219]]="selectedRating() !== opt.value"
+                [class.hover:border-white/20]="selectedRating() !== opt.value"
+                (click)="selectedRating.set(opt.value)"
+                type="button"
+              >
+                <span
+                  class="font-serif italic text-lg"
+                  [class.text-[#e8b86d]]="selectedRating() === opt.value"
+                  [class.text-white]="selectedRating() !== opt.value"
+                >{{ opt.label }}</span>
+                @if (selectedRating() === opt.value) {
+                  <span class="ms-icon text-[#e8b86d] text-xl">check_circle</span>
+                }
+              </button>
+            }
+          </div>
+        }
+
+      </div>
+
+      <!-- Footer nav -->
+      <div class="flex items-center justify-between px-8 pb-8">
+        @if (step() > 1) {
+          <button
+            class="text-slate-500 hover:text-slate-300 text-sm uppercase tracking-widest transition-colors flex items-center gap-2"
+            (click)="back()"
+            type="button"
+          >
+            <span class="ms-icon text-base">arrow_back</span>
+            Voltar
+          </button>
+        } @else {
+          <span></span>
+        }
+
+        @if (step() < totalSteps) {
+          <button
+            class="bg-[#e8b86d] hover:bg-[#ffd598] text-[#432c00] font-bold text-sm tracking-[0.15em] uppercase px-8 py-3 rounded-[4px] flex items-center gap-2 transition-all active:scale-95"
+            (click)="next()"
+            type="button"
+          >
+            Continuar
+            <span class="ms-icon text-base">arrow_forward</span>
+          </button>
+        } @else {
+          <button
+            class="bg-[#e8b86d] hover:bg-[#ffd598] text-[#432c00] font-bold text-sm tracking-[0.15em] uppercase px-8 py-3 rounded-[4px] flex items-center gap-3 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            (click)="finish()"
+            [disabled]="generating()"
+            type="button"
+          >
+            @if (generating()) {
+              <span class="w-4 h-4 border-2 border-[#432c00]/30 border-t-[#432c00] rounded-full animate-spin"></span>
+              Gerando perfil...
+            } @else {
+              <span class="ms-icon text-base">auto_awesome</span>
+              Criar meu perfil com IA
+            }
+          </button>
+        }
+      </div>
+
+    }<!-- end @else steps 1-5 -->
+
   </div>
 
 </div>

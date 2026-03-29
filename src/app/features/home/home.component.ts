@@ -1,10 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
-import { AppStateService } from '../../core/services/app-state.service';
-import { ProfileService } from '../../core/services/profile.service';
+import { TmdbService } from '../../core/services/tmdb.service';
 import { WatchlistService } from '../../core/services/watchlist.service';
-import { TmdbService, type ProfileFilters } from '../../core/services/tmdb.service';
 import { DetailComponent } from '../detail/detail.component';
 import { environment } from '../../../environments/environment';
 import type { Movie } from '../../core/models/movie.model';
@@ -16,32 +13,14 @@ import type { WatchlistItem } from '../../core/models/profile.model';
   templateUrl: './home.component.html',
 })
 export class HomeComponent implements OnInit {
-  protected readonly stateService     = inject(AppStateService);
-  protected readonly profileService   = inject(ProfileService);
   protected readonly watchlistService = inject(WatchlistService);
   private readonly tmdb               = inject(TmdbService);
 
-  protected readonly imageBase = environment.tmdbImageBase;
-
-  protected readonly loading          = signal(true);
-  protected readonly featuredMovie    = signal<Movie | null>(null);
-  protected readonly suggestionResults = signal<Movie[][]>([]);
-  protected readonly activeChip       = signal(0);
-  protected readonly selectedMovie    = signal<Movie | null>(null);
-
-  protected get geminiSuggestions() { return this.stateService.geminiSuggestions(); }
-  protected get geminiGreeting()    { return this.stateService.geminiGreeting(); }
-
-  protected get hasAI(): boolean {
-    return this.geminiSuggestions.length > 0;
-  }
-
-  protected get activeSuggestions(): Movie[] {
-    const results  = this.suggestionResults();
-    const featured = this.featuredMovie();
-    const arr      = results[this.activeChip()] ?? results[0] ?? [];
-    return (featured ? arr.filter(m => m.id !== featured.id) : arr).slice(0, 12);
-  }
+  protected readonly imageBase      = environment.tmdbImageBase;
+  protected readonly loading        = signal(true);
+  protected readonly featuredMovie  = signal<Movie | null>(null);
+  protected readonly trendingMovies = signal<Movie[]>([]);
+  protected readonly selectedMovie  = signal<Movie | null>(null);
 
   protected get heroBackdrop(): string | null {
     const m = this.featuredMovie();
@@ -54,8 +33,7 @@ export class HomeComponent implements OnInit {
   }
 
   protected get featuredYear(): string {
-    const m = this.featuredMovie();
-    const d = m?.release_date ?? m?.first_air_date ?? '';
+    const d = this.featuredMovie()?.release_date ?? this.featuredMovie()?.first_air_date ?? '';
     return d ? d.slice(0, 4) : '';
   }
 
@@ -67,50 +45,22 @@ export class HomeComponent implements OnInit {
     return new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
   }
 
+  protected get gridMovies(): Movie[] {
+    const featured = this.featuredMovie();
+    return this.trendingMovies()
+      .filter(m => m.id !== featured?.id)
+      .slice(0, 12);
+  }
+
   ngOnInit(): void {
-    const suggestions = this.geminiSuggestions;
-    const profile     = this.profileService.profile();
-
-    const filters: ProfileFilters = profile
-      ? { decades: profile.decades, minRating: profile.minRating, platformIds: profile.streamingPlatformIds }
-      : {};
-
-    const rawType    = profile?.contentType ?? 'all';
-    const type: 'movie' | 'tv' = rawType === 'tv' ? 'tv' : 'movie';
-    const isAnime    = rawType === 'anime';
-
-    if (suggestions.length > 0) {
-      forkJoin(
-        suggestions.map(s => {
-          const ids = type === 'tv' ? s.tvGenreIds : s.genreIds;
-          return this.tmdb.discoverByGenres(type, ids, isAnime, filters);
-        })
-      ).subscribe({
-        next: results => {
-          this.suggestionResults.set(results);
-          if (results[0]?.length) this.featuredMovie.set(results[0][0]);
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false),
-      });
-    } else {
-      this.tmdb.getTrending(type).subscribe({
-        next: movies => {
-          this.suggestionResults.set([movies]);
-          if (movies.length) this.featuredMovie.set(movies[0]);
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false),
-      });
-    }
-  }
-
-  protected selectChip(index: number): void {
-    this.activeChip.set(index);
-  }
-
-  protected matchPercent(movie: Movie): number {
-    return Math.min(99, Math.round(movie.vote_average * 9.9));
+    this.tmdb.getTrending('movie').subscribe({
+      next: movies => {
+        if (movies.length) this.featuredMovie.set(movies[0]);
+        this.trendingMovies.set(movies);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
   }
 
   protected posterUrl(path: string | null): string {
@@ -132,6 +82,10 @@ export class HomeComponent implements OnInit {
 
   protected getDetailType(m: Movie): 'movie' | 'tv' {
     return m.media_type === 'tv' || (!!m.name && !m.title) ? 'tv' : 'movie';
+  }
+
+  protected matchPercent(movie: Movie): number {
+    return Math.min(99, Math.round(movie.vote_average * 9.9));
   }
 
   protected toggleWatchlist(movie: Movie, event?: MouseEvent): void {

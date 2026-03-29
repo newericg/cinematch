@@ -24,6 +24,16 @@
         class="font-medium text-[10px] tracking-widest uppercase transition-colors duration-300 text-slate-500 hover:text-slate-200"
       >Início</a>
       <a
+        routerLink="/curations"
+        routerLinkActive="text-[#e8b86d]"
+        class="font-medium text-[10px] tracking-widest uppercase transition-colors duration-300 text-slate-500 hover:text-slate-200 flex items-center gap-1.5"
+      >
+        Para Mim
+        @if (profileService.hasProfile()) {
+          <span class="w-1.5 h-1.5 rounded-full bg-[#e8b86d] inline-block"></span>
+        }
+      </a>
+      <a
         routerLink="/discover"
         routerLinkActive="text-[#e8b86d]"
         class="font-medium text-[10px] tracking-widest uppercase transition-colors duration-300 text-slate-500 hover:text-slate-200"
@@ -43,13 +53,12 @@
     </nav>
 
     <div class="flex items-center gap-3">
-      <!-- Reset profile (shows after onboarding) -->
       @if (profileService.hasProfile()) {
         <button
           class="text-[10px] font-medium tracking-wider uppercase text-slate-600 hover:text-[#e8b86d] transition-colors duration-200"
           type="button"
           title="Refazer perfil"
-          (click)="profileService.clear()"
+          (click)="resetProfile()"
         >
           <span class="ms-icon text-lg">manage_accounts</span>
         </button>
@@ -83,6 +92,7 @@
       </p>
     </div>
     <nav class="flex gap-8">
+      <a routerLink="/curations" class="font-sans text-xs font-light tracking-widest uppercase text-slate-600 hover:text-slate-300 underline underline-offset-4 transition-all">Para Mim</a>
       <a routerLink="/discover" class="font-sans text-xs font-light tracking-widest uppercase text-slate-600 hover:text-slate-300 underline underline-offset-4 transition-all">Descobrir</a>
       <a routerLink="/watchlist" class="font-sans text-xs font-light tracking-widest uppercase text-slate-600 hover:text-slate-300 underline underline-offset-4 transition-all">Watchlist</a>
     </nav>
@@ -90,7 +100,7 @@
 </footer>
 
 <!-- Bottom Nav (mobile only) -->
-<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-4 pt-3 bg-[#111319]/80 backdrop-blur-xl z-50 border-t border-white/5">
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-2 pb-4 pt-3 bg-[#111319]/80 backdrop-blur-xl z-50 border-t border-white/5">
   <a
     routerLink="/"
     routerLinkActive="text-[#e8b86d]"
@@ -99,6 +109,17 @@
   >
     <span class="ms-icon mb-1 text-[22px]">home</span>
     <span class="font-sans text-[9px] font-medium uppercase tracking-tighter">Início</span>
+  </a>
+  <a
+    routerLink="/curations"
+    routerLinkActive="text-[#e8b86d]"
+    class="flex flex-col items-center justify-center pt-2 text-slate-500 hover:text-slate-200 transition-all relative"
+  >
+    <span class="ms-icon mb-1 text-[22px]">auto_awesome</span>
+    <span class="font-sans text-[9px] font-medium uppercase tracking-tighter">Para Mim</span>
+    @if (profileService.hasProfile()) {
+      <span class="absolute top-1 right-2 w-1.5 h-1.5 rounded-full bg-[#e8b86d]"></span>
+    }
   </a>
   <a
     routerLink="/discover"
@@ -116,7 +137,7 @@
     <span class="ms-icon mb-1 text-[22px]">bookmark</span>
     <span class="font-sans text-[9px] font-medium uppercase tracking-tighter">Watchlist</span>
     @if (watchlistService.count() > 0) {
-      <span class="absolute top-0 right-3 w-3.5 h-3.5 bg-[#e8b86d] text-[#432c00] text-[8px] font-bold rounded-full flex items-center justify-center">
+      <span class="absolute top-1 right-2 w-3.5 h-3.5 bg-[#e8b86d] text-[#432c00] text-[8px] font-bold rounded-full flex items-center justify-center">
         {{ watchlistService.count() }}
       </span>
     }
@@ -125,14 +146,10 @@
     class="flex flex-col items-center justify-center pt-2 text-slate-500 hover:text-[#e8b86d] transition-all"
     type="button"
     title="Refazer perfil"
-    (click)="profileService.clear()"
+    (click)="resetProfile()"
   >
     <span class="ms-icon mb-1 text-[22px]">manage_accounts</span>
     <span class="font-sans text-[9px] font-medium uppercase tracking-tighter">Perfil</span>
-  </button>
-  <button class="flex flex-col items-center justify-center pt-2 text-slate-500 hover:text-[#e8b86d] transition-all" type="button">
-    <span class="ms-icon mb-1 text-[22px]">person</span>
-    <span class="font-sans text-[9px] font-medium uppercase tracking-tighter">Conta</span>
   </button>
 </nav>
 

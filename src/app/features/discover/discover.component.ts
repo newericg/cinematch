@@ -63,8 +63,9 @@ export class DiscoverComponent {
     if (tab === 'mood') {
       const mood = this.stateService.selectedMood();
       if (!mood) return;
+      const genreIds = type === 'tv' ? mood.tvGenreIds : mood.genreIds;
       this.stateService.setLoading(true);
-      this.tmdb.discoverByGenres(type, mood.genreIds, isAnime).subscribe({
+      this.tmdb.discoverByGenres(type, genreIds, isAnime).subscribe({
         next:  results => this.stateService.setResults(results),
         error: err => {
           this.stateService.setError('Erro ao buscar títulos. Tente novamente.');

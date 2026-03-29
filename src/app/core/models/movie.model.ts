@@ -113,7 +113,8 @@ export interface MoodOption {
   emoji: string;
   label: string;
   description: string;
-  genreIds: number[];
+  genreIds: number[];    // TMDB movie genre IDs
+  tvGenreIds: number[];  // TMDB TV genre IDs (different taxonomy)
 }
 
 export interface AppState {
@@ -128,15 +129,61 @@ export interface AppState {
 }
 
 // ─── Mood definitions ────────────────────────────────────────────────────────
+// TV genre IDs divergem dos de filme no TMDB:
+// Ação filmes=28 | TV=10759 (Action & Adventure)
+// Sci-Fi filmes=878 | TV=10765 (Sci-Fi & Fantasy)
+// Terror filmes=27 | TV não existe (usar Crime 80 + Mistério 9648)
+// Thriller filmes=53 | TV não existe (usar Crime 80)
+// Comum aos dois: Comédia=35, Crime=80, Documentário=99, Drama=18, Família=10751, Animação=16, Mistério=9648
 export const MOODS: MoodOption[] = [
-  { id: 'nostalgic', emoji: '📼', label: 'Nostálgico',  description: 'Conforto e clássicos atemporais',      genreIds: [18, 36, 10751] },
-  { id: 'tense',     emoji: '🔪', label: 'Tenso',       description: 'Suspense de tirar o fôlego',           genreIds: [53, 27] },
-  { id: 'inspiring', emoji: '✨', label: 'Inspirador',  description: 'Histórias que transformam',             genreIds: [18, 36] },
-  { id: 'dark',      emoji: '🕯️', label: 'Sombrio',     description: 'O lado obscuro da sétima arte',        genreIds: [27, 80, 9648] },
-  { id: 'reflexive', emoji: '🪐', label: 'Reflexivo',   description: 'Filmes que exigem pensamento',          genreIds: [878, 18, 99] },
-  { id: 'fun',       emoji: '🍿', label: 'Divertido',   description: 'Entretenimento leve e vibrante',        genreIds: [35, 16, 10751] },
-  { id: 'complex',   emoji: '🧩', label: 'Complexo',    description: 'Roteiros intrincados e geniais',        genreIds: [9648, 53, 80] },
-  { id: 'elegant',   emoji: '🍷', label: 'Elegante',    description: 'Estética apurada e narrativa lenta',   genreIds: [10749, 18, 36] },
+  {
+    id: 'nostalgic', emoji: '📼', label: 'Nostálgico',
+    description: 'Conforto e clássicos atemporais',
+    genreIds:   [18, 36, 10751],
+    tvGenreIds: [18, 10751, 99],
+  },
+  {
+    id: 'tense', emoji: '🔪', label: 'Tenso',
+    description: 'Suspense de tirar o fôlego',
+    genreIds:   [53, 27],
+    tvGenreIds: [80, 9648],
+  },
+  {
+    id: 'inspiring', emoji: '✨', label: 'Inspirador',
+    description: 'Histórias que transformam',
+    genreIds:   [18, 36],
+    tvGenreIds: [18, 99],
+  },
+  {
+    id: 'dark', emoji: '🕯️', label: 'Sombrio',
+    description: 'O lado obscuro da sétima arte',
+    genreIds:   [27, 80, 9648],
+    tvGenreIds: [80, 9648],
+  },
+  {
+    id: 'reflexive', emoji: '🪐', label: 'Reflexivo',
+    description: 'Filmes que exigem pensamento',
+    genreIds:   [878, 18, 99],
+    tvGenreIds: [10765, 18, 99],
+  },
+  {
+    id: 'fun', emoji: '🍿', label: 'Divertido',
+    description: 'Entretenimento leve e vibrante',
+    genreIds:   [35, 16, 10751],
+    tvGenreIds: [35, 16, 10751],
+  },
+  {
+    id: 'complex', emoji: '🧩', label: 'Complexo',
+    description: 'Roteiros intrincados e geniais',
+    genreIds:   [9648, 53, 80],
+    tvGenreIds: [9648, 80],
+  },
+  {
+    id: 'elegant', emoji: '🍷', label: 'Elegante',
+    description: 'Estética apurada e narrativa lenta',
+    genreIds:   [10749, 18, 36],
+    tvGenreIds: [18, 99],
+  },
 ];
 
 export const ALL_GENRES: Genre[] = [

@@ -1,0 +1,14 @@
+<div class="mood-grid">
+  @for (mood of moods; track mood.id) {
+    <button
+      class="mood-card"
+      [class.mood-card--active]="stateService.selectedMood()?.id === mood.id"
+      (click)="selectMood(mood)"
+      type="button"
+    >
+      <span class="mood-card__emoji">{{ mood.emoji }}</span>
+      <span class="mood-card__label">{{ mood.label }}</span>
+      <span class="mood-card__desc">{{ mood.description }}</span>
+    </button>
+  }
+</div>

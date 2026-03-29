@@ -1,0 +1,62 @@
+<div class="similar-tab">
+  @if (stateService.selectedReference(); as ref) {
+    <div class="similar-tab__chip">
+      <img
+        class="similar-tab__chip-img"
+        [src]="posterUrl(ref.poster_path)"
+        [alt]="getTitle(ref)"
+        loading="lazy"
+      />
+      <span class="similar-tab__chip-title">{{ getTitle(ref) }}</span>
+      <span class="similar-tab__chip-type">{{ ref.media_type === 'movie' ? 'Filme' : 'Série' }}</span>
+      <button class="similar-tab__chip-remove" (click)="removeReference()" type="button" aria-label="Remover">✕</button>
+    </div>
+    <p class="similar-tab__hint">Buscando títulos similares a este.</p>
+  } @else {
+    <p class="similar-tab__label">Pesquise um filme ou série que você gostou:</p>
+    <div class="similar-tab__search-wrap">
+      <div class="similar-tab__input-wrap">
+        <span class="similar-tab__icon">🔍</span>
+        <input
+          class="similar-tab__input"
+          type="text"
+          placeholder="Ex: Inception, Breaking Bad..."
+          [value]="query()"
+          (input)="onQueryChange($any($event.target).value)"
+          (blur)="hideDrop()"
+          autocomplete="off"
+        />
+        @if (searching()) {
+          <span class="similar-tab__spinner"></span>
+        }
+      </div>
+
+      @if (showDrop()) {
+        <div class="similar-tab__dropdown" role="listbox">
+          @for (item of suggestions(); track item.id) {
+            <button
+              class="similar-tab__option"
+              type="button"
+              role="option"
+              (click)="selectItem(item)"
+            >
+              <img
+                class="similar-tab__option-img"
+                [src]="posterUrl(item.poster_path)"
+                [alt]="getTitle(item)"
+                loading="lazy"
+              />
+              <div class="similar-tab__option-info">
+                <span class="similar-tab__option-title">{{ getTitle(item) }}</span>
+                <span class="similar-tab__option-meta">
+                  {{ item.media_type === 'movie' ? '🎬' : '📺' }}
+                  {{ getYear(item) }}
+                </span>
+              </div>
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

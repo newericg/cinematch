@@ -1,0 +1,29 @@
+<header class="app-header">
+  <div class="app-header__inner">
+    <a class="app-header__logo" href="/">
+      <span class="app-header__logo-icon">🎬</span>
+      <span class="app-header__logo-text">Cine<em>Match</em></span>
+    </a>
+    <div class="app-header__actions">
+      @if (apiKeyService.hasKey()) {
+        <button
+          class="app-header__key-btn"
+          type="button"
+          title="API Key configurada"
+          (click)="apiKeyService.clearApiKey(); toastService.info('API Key removida.')"
+        >
+          🔑 API Key ✓
+        </button>
+      }
+    </div>
+  </div>
+</header>
+
+<main class="app-main">
+  <div class="app-container">
+    <app-api-key-banner />
+    <router-outlet />
+  </div>
+</main>
+
+<app-toast />

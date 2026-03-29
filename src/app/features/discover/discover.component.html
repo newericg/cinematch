@@ -1,0 +1,66 @@
+<section class="discover">
+  <!-- Content type filter -->
+  <div class="discover__type-bar">
+    @for (ct of contentTypes; track ct.id) {
+      <button
+        class="discover__type-btn"
+        [class.discover__type-btn--active]="stateService.contentType() === ct.id"
+        (click)="setContentType(ct.id)"
+        type="button"
+      >
+        {{ ct.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Tab nav -->
+  <div class="discover__tabs" role="tablist">
+    @for (tab of tabs; track tab.id) {
+      <button
+        class="discover__tab"
+        [class.discover__tab--active]="stateService.activeTab() === tab.id"
+        (click)="setTab(tab.id)"
+        role="tab"
+        [attr.aria-selected]="stateService.activeTab() === tab.id"
+        type="button"
+      >
+        {{ tab.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Tab content -->
+  <div class="discover__panel" role="tabpanel">
+    @switch (stateService.activeTab()) {
+      @case ('mood') {
+        <app-mood-tab (search)="performSearch()" />
+      }
+      @case ('genre') {
+        <app-genre-tab (search)="performSearch()" />
+      }
+      @case ('similar') {
+        <app-similar-tab (search)="performSearch()" />
+      }
+    }
+  </div>
+
+  <!-- Results area -->
+  <div class="discover__results">
+    @if (stateService.loading()) {
+      <app-loading-skeleton [count]="8" />
+    } @else if (stateService.error()) {
+      <div class="discover__error">
+        <span class="discover__error-icon">⚠️</span>
+        <p>{{ stateService.error() }}</p>
+      </div>
+    } @else if (stateService.results().length > 0) {
+      <app-results [movies]="stateService.results()" [contentType]="stateService.contentType()" />
+    } @else if (!stateService.loading()) {
+      <div class="discover__empty">
+        <div class="discover__empty-graphic">🎬</div>
+        <h3>Pronto para descobrir?</h3>
+        <p>Escolha um humor, gênero ou título de referência para começar.</p>
+      </div>
+    }
+  </div>
+</section>

@@ -1,0 +1,95 @@
+<div class="detail-backdrop" (click)="onBackdropClick($event)" role="dialog" aria-modal="true">
+  <div class="detail-modal">
+    <!-- Cinematic backdrop -->
+    @if (backdropUrl()) {
+      <div
+        class="detail-modal__backdrop"
+        [style.background-image]="'url(' + backdropUrl() + ')'"
+      ></div>
+    }
+    <div class="detail-modal__backdrop-overlay"></div>
+
+    <!-- Close button -->
+    <button class="detail-modal__close" (click)="closed.emit()" type="button" aria-label="Fechar">✕</button>
+
+    <!-- Content -->
+    <div class="detail-modal__content">
+      @if (loading()) {
+        <div class="detail-modal__loading">
+          <div class="detail-modal__spinner"></div>
+        </div>
+      } @else {
+        <div class="detail-modal__layout">
+          <!-- Poster -->
+          <div class="detail-modal__poster-wrap">
+            <img class="detail-modal__poster" [src]="posterUrl()" [alt]="title" />
+          </div>
+
+          <!-- Info -->
+          <div class="detail-modal__info">
+            <h2 class="detail-modal__title">{{ title }}</h2>
+
+            <div class="detail-modal__meta">
+              @if (year) {
+                <span class="detail-modal__meta-item">📅 {{ year }}</span>
+              }
+              @if (runtime) {
+                <span class="detail-modal__meta-item">⏱ {{ runtime }}</span>
+              }
+              <span class="detail-modal__meta-item detail-modal__rating">
+                ⭐ {{ rating }}
+              </span>
+            </div>
+
+            @if (detail()?.tagline) {
+              <p class="detail-modal__tagline">"{{ detail()!.tagline }}"</p>
+            }
+
+            @if (detail()?.overview) {
+              <p class="detail-modal__overview">{{ detail()!.overview }}</p>
+            }
+
+            <!-- Genres -->
+            @if (detail()?.genres?.length) {
+              <div class="detail-modal__genres">
+                @for (g of detail()!.genres; track g.id) {
+                  <span class="detail-modal__genre-tag">{{ g.name }}</span>
+                }
+              </div>
+            }
+
+            <!-- Watch Providers -->
+            @if (providers().length > 0) {
+              <div class="detail-modal__providers">
+                <h4 class="detail-modal__providers-title">Onde assistir no Brasil</h4>
+                <div class="detail-modal__providers-list">
+                  @for (p of providers(); track p.provider_id) {
+                    <img
+                      class="detail-modal__provider-logo"
+                      [src]="providerLogoUrl(p.logo_path)"
+                      [alt]="p.provider_name"
+                      [title]="p.provider_name"
+                      loading="lazy"
+                    />
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Trailer -->
+            @if (trailer()) {
+              <a
+                class="detail-modal__trailer-btn"
+                [href]="trailerUrl(trailer()!.key)"
+                target="_blank"
+                rel="noopener"
+              >
+                ▶ Assistir Trailer
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

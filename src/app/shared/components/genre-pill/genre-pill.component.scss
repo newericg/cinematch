@@ -1,0 +1,28 @@
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #9ca3af;
+  font-size: 0.8125rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: rgba(232, 184, 109, 0.4);
+    color: #e8b86d;
+    background: rgba(232, 184, 109, 0.08);
+  }
+
+  &--active {
+    background: rgba(232, 184, 109, 0.15);
+    border-color: #e8b86d;
+    color: #e8b86d;
+    font-weight: 600;
+  }
+}

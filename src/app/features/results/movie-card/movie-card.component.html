@@ -1,0 +1,18 @@
+<article class="card" (click)="openDetail.emit(movie())">
+  <div class="card__poster-wrap">
+    <img
+      class="card__poster"
+      [src]="posterUrl(movie().poster_path)"
+      [alt]="title"
+      loading="lazy"
+    />
+    <div class="card__overlay">
+      <button class="card__play" type="button" aria-label="Ver detalhes">▶</button>
+    </div>
+    <span class="card__badge card__badge--{{ ratingClass }}">⭐ {{ rating }}</span>
+  </div>
+  <div class="card__body">
+    <h3 class="card__title">{{ title }}</h3>
+    <span class="card__year">{{ year }}</span>
+  </div>
+</article>

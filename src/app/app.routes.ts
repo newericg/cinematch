@@ -8,6 +8,11 @@ export const routes: Routes = [
       import('./features/discover/discover.component').then(m => m.DiscoverComponent),
   },
   {
+    path: 'watchlist',
+    loadComponent: () =>
+      import('./features/watchlist/watchlist.component').then(m => m.WatchlistComponent),
+  },
+  {
     path: '**',
     redirectTo: '',
   },

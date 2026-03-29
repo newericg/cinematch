@@ -76,17 +76,28 @@
               </div>
             }
 
-            <!-- Trailer -->
-            @if (trailer()) {
-              <a
-                class="detail-modal__trailer-btn"
-                [href]="trailerUrl(trailer()!.key)"
-                target="_blank"
-                rel="noopener"
+            <!-- Actions -->
+            <div class="detail-modal__actions">
+              <button
+                class="detail-modal__watchlist-btn"
+                [class.detail-modal__watchlist-btn--active]="watchlistService.isInWatchlist(movie().id)"
+                (click)="toggleWatchlist()"
+                type="button"
               >
-                ▶ Assistir Trailer
-              </a>
-            }
+                {{ watchlistService.isInWatchlist(movie().id) ? '♥ Salvo na Watchlist' : '♡ Salvar na Watchlist' }}
+              </button>
+
+              @if (trailer()) {
+                <a
+                  class="detail-modal__trailer-btn"
+                  [href]="trailerUrl(trailer()!.key)"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  ▶ Assistir Trailer
+                </a>
+              }
+            </div>
           </div>
         </div>
       }

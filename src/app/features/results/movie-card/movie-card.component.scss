@@ -61,6 +61,31 @@
     &:hover { transform: scale(1.1); }
   }
 
+  &__watchlist {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(8, 10, 15, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #6b7280;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    opacity: 0;
+    backdrop-filter: blur(6px);
+
+    &:hover { color: #e8b86d; border-color: rgba(232, 184, 109, 0.4); }
+    &--active { color: #e8b86d; border-color: rgba(232, 184, 109, 0.5); opacity: 1 !important; }
+  }
+
+  &:hover &__watchlist { opacity: 1; }
+
   &__badge {
     position: absolute;
     top: 8px;

@@ -1,3 +1,29 @@
+<!-- Gemini AI Banner (shown after onboarding) -->
+@if (stateService.geminiGreeting() || stateService.geminiSuggestions().length > 0) {
+  <section class="mb-10 p-6 bg-[#0f1219] border border-[#e8b86d]/20 rounded-[4px]">
+    <div class="flex items-start gap-3 mb-4">
+      <span class="text-xl">✨</span>
+      <div>
+        <p class="text-[10px] font-medium tracking-[0.2em] uppercase text-[#e8b86d] mb-1">Curadoria Personalizada por IA</p>
+        <p class="text-slate-300 text-sm leading-relaxed">{{ stateService.geminiGreeting() }}</p>
+      </div>
+    </div>
+    @if (stateService.geminiSuggestions().length > 0) {
+      <div class="flex flex-wrap gap-2 mt-4">
+        @for (s of stateService.geminiSuggestions(); track s.label) {
+          <button
+            class="px-4 py-2 bg-[#e8b86d]/10 border border-[#e8b86d]/30 text-[#e8b86d] text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-[#e8b86d]/20 transition-all active:scale-95"
+            (click)="useGeminiSuggestion(s.genreIds, s.tvGenreIds)"
+            type="button"
+          >
+            {{ s.label }}
+          </button>
+        }
+      </div>
+    }
+  </section>
+}
+
 <!-- Hero Section -->
 <section class="relative mb-16">
   <div class="max-w-3xl">

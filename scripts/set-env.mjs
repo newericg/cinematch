@@ -1,25 +1,32 @@
 /**
- * Injeta a variável de ambiente TMDB_API_KEY no environment.prod.ts antes do build.
+ * Injeta variáveis de ambiente no environment.prod.ts antes do build.
  * Usado pelo Cloudflare Pages via: npm run build:cf
+ *
+ * Variáveis esperadas:
+ *   TMDB_API_KEY   — chave da API do TMDB (obrigatória)
+ *   GEMINI_API_KEY — chave da API do Google Gemini (opcional, IA desabilitada se ausente)
  */
 import { readFileSync, writeFileSync } from 'fs';
 
-const key = process.env['TMDB_API_KEY'];
+const tmdbKey   = process.env['TMDB_API_KEY'];
+const geminiKey = process.env['GEMINI_API_KEY'] ?? '';
 
-if (!key) {
+if (!tmdbKey) {
   console.error('❌  Variável TMDB_API_KEY não encontrada. Configure-a no Cloudflare Pages.');
   process.exit(1);
 }
 
 const envFile = 'src/environments/environment.prod.ts';
-const original = readFileSync(envFile, 'utf8');
+let content = readFileSync(envFile, 'utf8');
 
-if (!original.includes('COLOQUE_SUA_CHAVE_AQUI')) {
-  console.log('ℹ️  Placeholder já substituído anteriormente — pulando.');
-  process.exit(0);
-}
+content = content.replace('COLOQUE_SUA_CHAVE_AQUI',        tmdbKey);
+content = content.replace('COLOQUE_SUA_CHAVE_GEMINI_AQUI', geminiKey);
 
-const updated = original.replace('COLOQUE_SUA_CHAVE_AQUI', key);
-writeFileSync(envFile, updated, 'utf8');
+writeFileSync(envFile, content, 'utf8');
 
 console.log('✅  TMDB_API_KEY injetada em environment.prod.ts');
+if (geminiKey) {
+  console.log('✅  GEMINI_API_KEY injetada em environment.prod.ts');
+} else {
+  console.log('ℹ️  GEMINI_API_KEY não configurada — IA usará fallback sem sugestões personalizadas.');
+}

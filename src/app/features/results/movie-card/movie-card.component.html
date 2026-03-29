@@ -10,6 +10,17 @@
       <button class="card__play" type="button" aria-label="Ver detalhes">▶</button>
     </div>
     <span class="card__badge card__badge--{{ ratingClass }}">⭐ {{ rating }}</span>
+
+    <!-- Watchlist toggle -->
+    <button
+      class="card__watchlist"
+      [class.card__watchlist--active]="watchlistService.isInWatchlist(movie().id)"
+      (click)="toggleWatchlist($event)"
+      type="button"
+      [attr.aria-label]="watchlistService.isInWatchlist(movie().id) ? 'Remover da watchlist' : 'Salvar na watchlist'"
+    >
+      {{ watchlistService.isInWatchlist(movie().id) ? '♥' : '♡' }}
+    </button>
   </div>
   <div class="card__body">
     <h3 class="card__title">{{ title }}</h3>

@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import type { Movie, MovieDetail, Video, Provider } from '../../core/models/movie.model';
 import { TmdbService } from '../../core/services/tmdb.service';
+import { WatchlistService } from '../../core/services/watchlist.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -22,7 +23,8 @@ export class DetailComponent implements OnInit {
   readonly contentType = input<'movie' | 'tv'>('movie');
   readonly closed      = output<void>();
 
-  private readonly tmdb = inject(TmdbService);
+  private readonly tmdb            = inject(TmdbService);
+  protected readonly watchlistService = inject(WatchlistService);
 
   protected readonly imageBase = environment.tmdbImageBase;
   protected readonly detail    = signal<MovieDetail | null>(null);
@@ -109,5 +111,16 @@ export class DetailComponent implements OnInit {
 
   protected trailerUrl(key: string): string {
     return `https://www.youtube.com/watch?v=${key}`;
+  }
+
+  protected toggleWatchlist(): void {
+    const m = this.movie();
+    this.watchlistService.toggle({
+      id:           m.id,
+      title:        this.title,
+      poster_path:  m.poster_path,
+      vote_average: m.vote_average,
+      media_type:   this.contentType(),
+    });
   }
 }

@@ -1,5 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import type { AppState, ActiveTab, ContentType, MoodOption, Movie, SearchResult } from '../models/movie.model';
+import type { GeminiResponse, GeminiSuggestion } from '../models/profile.model';
 
 @Injectable({ providedIn: 'root' })
 export class AppStateService {
@@ -63,5 +64,17 @@ export class AppStateService {
 
   setError(error: string | null): void {
     this._state.update(s => ({ ...s, error, loading: false }));
+  }
+
+  // ─── Gemini ────────────────────────────────────────────────────────────────
+  private readonly _geminiGreeting    = signal<string>('');
+  private readonly _geminiSuggestions = signal<GeminiSuggestion[]>([]);
+
+  readonly geminiGreeting    = this._geminiGreeting.asReadonly();
+  readonly geminiSuggestions = this._geminiSuggestions.asReadonly();
+
+  setGeminiResponse(response: GeminiResponse): void {
+    this._geminiGreeting.set(response.greeting);
+    this._geminiSuggestions.set(response.suggestions);
   }
 }

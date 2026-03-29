@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, forkJoin, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { DECADES } from '../models/profile.model';
 import type {
   Movie,
   MovieDetail,
@@ -11,6 +12,12 @@ import type {
   PaginatedResponse,
   VideoResponse,
 } from '../models/movie.model';
+
+export interface ProfileFilters {
+  decades?: string[];
+  minRating?: number;
+  platformIds?: number[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class TmdbService {
@@ -22,12 +29,12 @@ export class TmdbService {
   discoverByGenres(
     type: 'movie' | 'tv',
     genreIds: number[],
-    anime = false
+    anime = false,
+    profileFilters: ProfileFilters = {}
   ): Observable<Movie[]> {
     const endpoint = `${this.base}/discover/${type}`;
 
     const buildParams = (page: number): HttpParams => {
-      // Use '|' (OR) instead of ',' (AND) so a title only needs one matching genre
       let params = new HttpParams()
         .set('sort_by',        'popularity.desc')
         .set('with_genres',    genreIds.join('|'))
@@ -35,16 +42,47 @@ export class TmdbService {
         .set('page',           String(page));
 
       if (anime) {
-        // Anime = Japanese animation; genre filter replaced by language + animation tag
         params = params
           .set('with_original_language', 'ja')
           .set('with_genres',            '16');
       }
 
+      // Profile: minimum rating
+      if (profileFilters.minRating && profileFilters.minRating > 0) {
+        params = params.set('vote_average.gte', String(profileFilters.minRating));
+      }
+
+      // Profile: decade range (use the broadest span if multiple selected)
+      const { decades } = profileFilters;
+      if (decades && decades.length > 0) {
+        const ranges = decades
+          .map(d => DECADES.find(dec => dec.id === d))
+          .filter(Boolean) as typeof DECADES;
+
+        const from = ranges.map(r => r.from).sort()[0];
+        const to   = ranges.map(r => r.to).sort().at(-1)!;
+
+        if (type === 'movie') {
+          params = params
+            .set('primary_release_date.gte', from)
+            .set('primary_release_date.lte', to);
+        } else {
+          params = params
+            .set('first_air_date.gte', from)
+            .set('first_air_date.lte', to);
+        }
+      }
+
+      // Profile: streaming platforms (watch region = BR)
+      if (profileFilters.platformIds && profileFilters.platformIds.length > 0) {
+        params = params
+          .set('with_watch_providers', profileFilters.platformIds.join('|'))
+          .set('watch_region',         'BR');
+      }
+
       return params;
     };
 
-    // Fetch 3 pages in parallel → up to 60 results, deduplicated
     return forkJoin([
       this.http.get<PaginatedResponse<Movie>>(endpoint, { params: buildParams(1) }),
       this.http.get<PaginatedResponse<Movie>>(endpoint, { params: buildParams(2) }),
@@ -67,9 +105,9 @@ export class TmdbService {
 
   searchMulti(query: string): Observable<SearchResult[]> {
     const params = new HttpParams()
-      .set('query', query)
-      .set('include_adult', 'false')
-      .set('language', 'pt-BR');
+      .set('query',          query)
+      .set('include_adult',  'false')
+      .set('language',       'pt-BR');
 
     return this.http
       .get<PaginatedResponse<SearchResult>>(`${this.base}/search/multi`, { params })
@@ -99,7 +137,6 @@ export class TmdbService {
       .get<VideoResponse>(`${this.base}/${type}/${id}/videos`, { params })
       .pipe(
         map(r => {
-          // prefer PT-BR trailers, fall back to EN
           const ptTrailers = r.results.filter(v => v.site === 'YouTube' && v.type === 'Trailer');
           return ptTrailers.length ? ptTrailers : r.results.filter(v => v.site === 'YouTube');
         })

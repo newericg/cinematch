@@ -1,5 +1,6 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import type { Movie, ContentType } from '../../../core/models/movie.model';
+import { WatchlistService } from '../../../core/services/watchlist.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -14,7 +15,8 @@ export class MovieCardComponent {
 
   readonly openDetail = output<Movie>();
 
-  protected readonly imageBase = environment.tmdbImageBase;
+  protected readonly watchlistService = inject(WatchlistService);
+  protected readonly imageBase        = environment.tmdbImageBase;
 
   protected get title(): string {
     return this.movie().title ?? this.movie().name ?? 'Sem título';
@@ -39,6 +41,18 @@ export class MovieCardComponent {
   protected posterUrl(path: string | null): string {
     return path
       ? `${this.imageBase}/w342${path}`
-      : 'assets/placeholder.svg';
+      : 'placeholder.svg';
+  }
+
+  protected toggleWatchlist(event: MouseEvent): void {
+    event.stopPropagation();
+    const m = this.movie();
+    this.watchlistService.toggle({
+      id:           m.id,
+      title:        this.title,
+      poster_path:  m.poster_path,
+      vote_average: m.vote_average,
+      media_type:   m.media_type === 'tv' || (!!m.name && !m.title) ? 'tv' : 'movie',
+    });
   }
 }

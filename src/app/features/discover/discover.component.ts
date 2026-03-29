@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AppStateService } from '../../core/services/app-state.service';
-import { TmdbService } from '../../core/services/tmdb.service';
+import { TmdbService, type ProfileFilters } from '../../core/services/tmdb.service';
 import { ToastService } from '../../core/services/toast.service';
 import { ApiKeyService } from '../../core/services/api-key.service';
+import { ProfileService } from '../../core/services/profile.service';
 import type { ActiveTab, ContentType } from '../../core/models/movie.model';
 import { MoodTabComponent } from './mood-tab/mood-tab.component';
 import { GenreTabComponent } from './genre-tab/genre-tab.component';
@@ -23,10 +24,11 @@ import { LoadingSkeletonComponent } from '../../shared/components/loading-skelet
   styleUrl: './discover.component.scss',
 })
 export class DiscoverComponent {
-  protected readonly stateService = inject(AppStateService);
-  private readonly tmdb           = inject(TmdbService);
-  private readonly toast          = inject(ToastService);
-  private readonly apiKeyService  = inject(ApiKeyService);
+  protected readonly stateService  = inject(AppStateService);
+  protected readonly profileService = inject(ProfileService);
+  private readonly tmdb            = inject(TmdbService);
+  private readonly toast           = inject(ToastService);
+  private readonly apiKeyService   = inject(ApiKeyService);
 
   protected readonly tabs: { id: ActiveTab; label: string }[] = [
     { id: 'mood',    label: '😌 Humor' },
@@ -49,6 +51,16 @@ export class DiscoverComponent {
     this.performSearch();
   }
 
+  private buildProfileFilters(): ProfileFilters {
+    const profile = this.profileService.profile();
+    if (!profile) return {};
+    return {
+      decades:     profile.decades,
+      minRating:   profile.minRating,
+      platformIds: profile.streamingPlatformIds,
+    };
+  }
+
   protected performSearch(): void {
     if (!this.apiKeyService.hasKey()) {
       this.toast.error('Configure sua API Key do TMDB primeiro!');
@@ -59,15 +71,16 @@ export class DiscoverComponent {
     const contentType = this.stateService.contentType();
     const type        = contentType === 'anime' ? 'tv' : contentType;
     const isAnime     = contentType === 'anime';
+    const filters     = this.buildProfileFilters();
 
     if (tab === 'mood') {
       const mood = this.stateService.selectedMood();
       if (!mood) return;
       const genreIds = type === 'tv' ? mood.tvGenreIds : mood.genreIds;
       this.stateService.setLoading(true);
-      this.tmdb.discoverByGenres(type, genreIds, isAnime).subscribe({
+      this.tmdb.discoverByGenres(type, genreIds, isAnime, filters).subscribe({
         next:  results => this.stateService.setResults(results),
-        error: err => {
+        error: () => {
           this.stateService.setError('Erro ao buscar títulos. Tente novamente.');
           this.toast.error('Erro na busca. Verifique sua API Key.');
         },
@@ -76,7 +89,7 @@ export class DiscoverComponent {
       const genres = Array.from(this.stateService.selectedGenres());
       if (!genres.length) return;
       this.stateService.setLoading(true);
-      this.tmdb.discoverByGenres(type, genres, isAnime).subscribe({
+      this.tmdb.discoverByGenres(type, genres, isAnime, filters).subscribe({
         next:  results => this.stateService.setResults(results),
         error: () => {
           this.stateService.setError('Erro ao buscar títulos. Tente novamente.');
@@ -96,5 +109,23 @@ export class DiscoverComponent {
         },
       });
     }
+  }
+
+  protected useGeminiSuggestion(genreIds: number[], tvGenreIds: number[]): void {
+    const contentType = this.stateService.contentType();
+    const type        = contentType === 'anime' ? 'tv' : contentType;
+    const isAnime     = contentType === 'anime';
+    const ids         = type === 'tv' ? tvGenreIds : genreIds;
+    const filters     = this.buildProfileFilters();
+
+    this.stateService.setActiveTab('genre');
+    this.stateService.setLoading(true);
+    this.tmdb.discoverByGenres(type, ids, isAnime, filters).subscribe({
+      next:  results => this.stateService.setResults(results),
+      error: () => {
+        this.stateService.setError('Erro ao buscar títulos.');
+        this.toast.error('Erro na busca.');
+      },
+    });
   }
 }

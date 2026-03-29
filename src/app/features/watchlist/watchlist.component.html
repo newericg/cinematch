@@ -1,0 +1,68 @@
+<!-- Hero -->
+<section class="mb-12">
+  <p class="font-sans text-[10px] font-medium tracking-[0.2em] uppercase text-[#e8b86d] mb-3">Sua Coleção</p>
+  <h2 class="font-serif text-4xl md:text-5xl text-white">
+    Minha <span class="italic text-[#e8b86d]">Watchlist</span>
+  </h2>
+  <p class="text-slate-400 font-light text-base mt-3 max-w-md">
+    {{ watchlistService.count() }} {{ watchlistService.count() === 1 ? 'título salvo' : 'títulos salvos' }}
+  </p>
+</section>
+
+@if (watchlistService.items().length === 0) {
+  <!-- Empty state -->
+  <div class="flex flex-col items-center gap-5 py-24 text-center">
+    <span class="text-6xl opacity-30">🎬</span>
+    <div>
+      <h3 class="font-serif italic text-2xl text-slate-400 mb-2">Nenhum título salvo ainda</h3>
+      <p class="text-slate-600 text-sm">Clique no ♥ em qualquer filme ou série para salvar aqui.</p>
+    </div>
+    <a
+      routerLink="/"
+      class="mt-2 bg-[#e8b86d] hover:bg-[#ffd598] text-[#432c00] font-bold text-sm tracking-[0.15em] uppercase px-8 py-3 rounded-[4px] transition-all active:scale-95"
+    >
+      Descobrir títulos
+    </a>
+  </div>
+} @else {
+  <!-- Grid -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+    @for (item of watchlistService.items(); track item.id) {
+      <div class="group relative bg-[#0f1219] border border-white/6 rounded-[4px] overflow-hidden">
+        <!-- Poster -->
+        <div class="aspect-[2/3] overflow-hidden">
+          <img
+            [src]="posterUrl(item.poster_path)"
+            [alt]="item.title"
+            class="w-full h-full object-cover transition-transform duration-400 group-hover:scale-105"
+            loading="lazy"
+          />
+        </div>
+
+        <!-- Rating badge -->
+        <span class="absolute top-2 left-2 text-[10px] font-bold px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm text-[#e8b86d]">
+          ⭐ {{ item.vote_average.toFixed(1) }}
+        </span>
+
+        <!-- Remove button -->
+        <button
+          class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-red-400 hover:text-red-300 hover:bg-black/80 transition-all opacity-0 group-hover:opacity-100"
+          (click)="watchlistService.remove(item.id)"
+          type="button"
+          title="Remover da watchlist"
+          aria-label="Remover"
+        >
+          <span class="ms-icon text-base">close</span>
+        </button>
+
+        <!-- Info -->
+        <div class="p-2.5">
+          <h3 class="font-sans text-[11px] font-semibold text-[#e8e6e0] leading-tight line-clamp-2">{{ item.title }}</h3>
+          <span class="text-[10px] text-slate-600 uppercase tracking-wider">
+            {{ item.media_type === 'movie' ? 'Filme' : 'Série' }}
+          </span>
+        </div>
+      </div>
+    }
+  </div>
+}

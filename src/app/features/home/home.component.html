@@ -1,0 +1,270 @@
+<!-- ─── Loading ────────────────────────────────────────────────────────────── -->
+@if (loading()) {
+  <div class="flex items-center justify-center min-h-[60vh]">
+    <div class="flex flex-col items-center gap-4">
+      <div class="w-10 h-10 border-2 border-white/10 border-t-[#e8b86d] rounded-full animate-spin"></div>
+      <p class="text-[10px] tracking-[0.3em] uppercase text-slate-500">Curadoria em andamento...</p>
+    </div>
+  </div>
+} @else {
+
+<!-- ─── Hero ──────────────────────────────────────────────────────────────── -->
+<section class="relative min-h-[65vh] md:min-h-[820px] w-full overflow-hidden mb-24 -mt-12 -mx-6 md:-mx-12 px-0" style="width: calc(100% + 3rem)">
+
+  @if (heroBackdrop) {
+    <div class="absolute inset-0" style="mask-image: linear-gradient(to bottom, black 55%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 100%)">
+      <img [src]="heroBackdrop" [alt]="featuredTitle" class="w-full h-full object-cover object-top" />
+      <div class="absolute inset-0 bg-gradient-to-r from-[#080a0f] via-[#080a0f]/60 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-[#080a0f] via-transparent to-transparent"></div>
+    </div>
+  } @else {
+    <div class="absolute inset-0 bg-gradient-to-br from-[#1a1408] via-[#111319] to-[#080a0f]"></div>
+  }
+
+  <div class="relative h-full flex flex-col justify-end px-6 md:px-12 pb-20 max-w-7xl" style="min-height: inherit">
+    @if (hasAI) {
+      <p class="text-[10px] font-medium tracking-[0.3em] uppercase text-[#e8b86d] mb-6 opacity-80">✨ Curadoria com Inteligência Artificial</p>
+      <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl leading-[1.05] max-w-4xl">
+        Nossa IA encontrou seu<br>próximo <span class="italic text-[#e8b86d]">clássico</span>.
+      </h1>
+    } @else {
+      <p class="text-[10px] font-medium tracking-[0.3em] uppercase text-slate-500 mb-6">Trending esta semana</p>
+      <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl leading-[1.05] max-w-4xl">
+        Descubra seu<br>próximo <span class="italic text-[#e8b86d]">favorito</span>.
+      </h1>
+    }
+    <p class="mt-6 text-xs text-slate-500 font-light tracking-[0.2em] uppercase">
+      Curadoria Digital &nbsp;•&nbsp; {{ editionLabel }}
+    </p>
+  </div>
+</section>
+
+<!-- ─── A Escolha do Curador Digital ─────────────────────────────────────── -->
+@if (featuredMovie()) {
+  <section class="mb-32">
+    <div class="flex items-baseline gap-4 mb-10">
+      <span class="text-xs font-medium tracking-[0.2em] uppercase text-slate-600">01</span>
+      <h2 class="font-serif text-4xl italic">
+        {{ hasAI ? 'A Escolha do Curador Digital' : 'Destaque da Semana' }}
+      </h2>
+    </div>
+
+    <div class="bg-[#1e1f25] overflow-hidden flex flex-col md:flex-row relative group transition-all duration-500 hover:shadow-[0_24px_60px_rgba(0,0,0,0.7)] rounded-[4px]">
+
+      <!-- Backdrop image -->
+      <div class="md:w-1/2 aspect-video md:aspect-auto overflow-hidden">
+        @if (featuredMovie()!.backdrop_path) {
+          <img
+            [src]="backdropUrl(featuredMovie()!.backdrop_path)"
+            [alt]="featuredTitle"
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        } @else {
+          <div class="w-full h-full bg-[#0f1219] flex items-center justify-center">
+            <span class="text-6xl opacity-20">🎬</span>
+          </div>
+        }
+      </div>
+
+      <!-- Info panel -->
+      <div class="md:w-1/2 p-8 md:p-14 flex flex-col justify-center bg-[#111319]">
+        <div class="flex justify-between items-start mb-6">
+          <span class="bg-gradient-to-r from-[#ffd598] to-[#e8b86d] text-[#432c00] text-[10px] font-bold px-3 py-1.5 tracking-[0.15em] uppercase rounded-[4px]">
+            Match de {{ matchPercent(featuredMovie()!) }}%
+          </span>
+          <span class="text-slate-600 text-xs tracking-tighter font-light uppercase">{{ featuredYear }}</span>
+        </div>
+
+        <h3 class="font-serif text-4xl md:text-5xl mb-5 leading-tight">{{ featuredTitle }}</h3>
+
+        @if (featuredRating) {
+          <div class="flex items-center gap-1.5 mb-4">
+            <span class="text-[#e8b86d] text-sm" style="font-family: 'Material Symbols Outlined'; font-variation-settings: 'FILL' 1">star</span>
+            <span class="text-[#e8b86d] font-bold text-sm">{{ featuredRating }}</span>
+            <span class="text-slate-600 text-xs">/ 10</span>
+          </div>
+        }
+
+        @if (featuredMovie()!.overview) {
+          <p class="text-slate-400 leading-relaxed font-light mb-8 line-clamp-4 text-sm md:text-base">
+            {{ featuredMovie()!.overview }}
+          </p>
+        }
+
+        <div class="flex flex-wrap gap-3">
+          <button
+            class="bg-gradient-to-r from-[#ffd598] to-[#e8b86d] text-[#432c00] px-8 py-4 font-bold tracking-[0.15em] uppercase text-xs rounded-[4px] hover:scale-95 transition-all active:scale-90"
+            (click)="selectedMovie.set(featuredMovie())"
+            type="button"
+          >
+            Ver Detalhes
+          </button>
+          <button
+            class="border px-8 py-4 font-bold tracking-[0.15em] uppercase text-xs rounded-[4px] transition-all"
+            [class.border-[#e8b86d]]="watchlistService.isInWatchlist(featuredMovie()!.id)"
+            [class.text-[#e8b86d]]="watchlistService.isInWatchlist(featuredMovie()!.id)"
+            [class.bg-[#e8b86d]/8]="watchlistService.isInWatchlist(featuredMovie()!.id)"
+            [class.border-white/10]="!watchlistService.isInWatchlist(featuredMovie()!.id)"
+            [class.text-slate-400]="!watchlistService.isInWatchlist(featuredMovie()!.id)"
+            [class.hover:border-[#e8b86d]]="!watchlistService.isInWatchlist(featuredMovie()!.id)"
+            [class.hover:text-[#e8b86d]]="!watchlistService.isInWatchlist(featuredMovie()!.id)"
+            (click)="toggleWatchlist(featuredMovie()!)"
+            type="button"
+          >
+            {{ watchlistService.isInWatchlist(featuredMovie()!.id) ? '♥ Salvo' : '♡ Salvar' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Hover border effect -->
+      <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#e8b86d]/25 transition-all pointer-events-none rounded-[4px]"></div>
+    </div>
+  </section>
+}
+
+<!-- ─── Parâmetros de Análise (AI chips) ──────────────────────────────────── -->
+@if (hasAI) {
+  <section class="mb-20">
+    <div class="flex flex-col items-center gap-6">
+      <p class="text-[10px] tracking-[0.3em] uppercase text-slate-600">Parâmetros de Análise</p>
+
+      @if (geminiGreeting) {
+        <p class="text-slate-400 text-sm font-light text-center max-w-xl leading-relaxed italic">
+          "{{ geminiGreeting }}"
+        </p>
+      }
+
+      <div class="flex flex-wrap justify-center gap-3 mt-2">
+        @for (s of geminiSuggestions; track s.label; let i = $index) {
+          <button
+            class="border px-6 py-3 text-[11px] tracking-[0.15em] uppercase transition-all font-bold rounded-[4px]"
+            [class.border-[#e8b86d]]="activeChip() === i"
+            [class.text-[#e8b86d]]="activeChip() === i"
+            [class.bg-[#282a30]]="activeChip() === i"
+            [class.border-white/8]="activeChip() !== i"
+            [class.text-slate-400]="activeChip() !== i"
+            [class.bg-[#191b21]]="activeChip() !== i"
+            [class.hover:border-[#e8b86d]/50]="activeChip() !== i"
+            [class.hover:text-[#e8b86d]/70]="activeChip() !== i"
+            (click)="selectChip(i)"
+            type="button"
+          >
+            {{ s.label }}
+          </button>
+        }
+      </div>
+    </div>
+  </section>
+}
+
+<!-- ─── Sugestões Personalizadas ──────────────────────────────────────────── -->
+@if (activeSuggestions.length > 0) {
+  <section class="mb-32">
+    <div class="flex items-baseline justify-between mb-10">
+      <div class="flex items-baseline gap-4">
+        <span class="text-xs font-medium tracking-[0.2em] uppercase text-slate-600">02</span>
+        <h2 class="font-serif text-4xl italic">
+          @if (hasAI) {
+            {{ geminiSuggestions[activeChip()]?.label ?? 'Sugestões Personalizadas' }}
+          } @else {
+            Em Alta Esta Semana
+          }
+        </h2>
+      </div>
+      <a
+        routerLink="/discover"
+        class="text-[10px] tracking-[0.2em] uppercase text-slate-600 hover:text-[#e8b86d] transition-colors hidden md:flex items-center gap-2"
+      >
+        Ver mais <span class="ms-icon text-sm">arrow_forward</span>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
+      @for (movie of activeSuggestions; track movie.id) {
+        <div class="group cursor-pointer" (click)="selectedMovie.set(movie)">
+
+          <!-- Poster -->
+          <div class="relative aspect-[2/3] overflow-hidden rounded-[4px] mb-4 transition-all duration-500 group-hover:shadow-[0_12px_32px_rgba(0,0,0,0.8)]">
+            <img
+              [src]="posterUrl(movie.poster_path)"
+              [alt]="getTitle(movie)"
+              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              loading="lazy"
+            />
+            <!-- Gold border on hover -->
+            <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#e8b86d] group-hover:shadow-[inset_0_0_20px_rgba(232,184,109,0.2)] transition-all"></div>
+
+            <!-- Watchlist button -->
+            <button
+              class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+              [class.text-[#e8b86d]]="watchlistService.isInWatchlist(movie.id)"
+              [class.text-slate-400]="!watchlistService.isInWatchlist(movie.id)"
+              [class.hover:text-[#e8b86d]]="!watchlistService.isInWatchlist(movie.id)"
+              (click)="toggleWatchlist(movie, $event)"
+              type="button"
+              [attr.aria-label]="watchlistService.isInWatchlist(movie.id) ? 'Remover' : 'Salvar'"
+            >
+              {{ watchlistService.isInWatchlist(movie.id) ? '♥' : '♡' }}
+            </button>
+          </div>
+
+          <!-- Info -->
+          <div class="flex justify-between items-start gap-1">
+            <div class="min-w-0">
+              <h4 class="text-[11px] font-bold tracking-tight mb-1 group-hover:text-[#ffd598] transition-colors uppercase truncate">
+                {{ getTitle(movie) }}
+              </h4>
+              <p class="text-[10px] text-slate-600 font-medium tracking-widest uppercase">{{ getYear(movie) }}</p>
+            </div>
+            <div class="flex items-center gap-0.5 text-[#e8b86d] shrink-0">
+              <span class="ms-icon text-xs" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">star</span>
+              <span class="text-[10px] font-bold">{{ movie.vote_average.toFixed(1) }}</span>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+
+    <!-- Mobile "Ver mais" link -->
+    <div class="flex justify-center mt-10 md:hidden">
+      <a
+        routerLink="/discover"
+        class="border border-white/10 px-8 py-3 text-[11px] tracking-[0.15em] uppercase text-slate-400 hover:border-[#e8b86d]/50 hover:text-[#e8b86d] transition-all rounded-[4px]"
+      >
+        Explorar mais títulos
+      </a>
+    </div>
+  </section>
+}
+
+<!-- ─── CTA if no AI yet ───────────────────────────────────────────────────── -->
+@if (!hasAI) {
+  <section class="mb-24 py-14 border border-white/6 rounded-[4px] bg-[#111319] flex flex-col items-center gap-5 text-center px-8">
+    <span class="text-4xl">✨</span>
+    <div>
+      <h3 class="font-serif text-2xl italic text-slate-200 mb-2">Quer recomendações com IA?</h3>
+      <p class="text-slate-500 text-sm font-light max-w-md">
+        Faça o onboarding e o Gemini vai criar uma curadoria personalizada para o seu gosto.
+      </p>
+    </div>
+    <button
+      class="bg-[#e8b86d] hover:bg-[#ffd598] text-[#432c00] font-bold text-xs tracking-[0.15em] uppercase px-8 py-4 rounded-[4px] transition-all active:scale-95"
+      type="button"
+      (click)="profileService.clear()"
+    >
+      Criar meu perfil
+    </button>
+  </section>
+}
+
+}<!-- end @else loading -->
+
+<!-- ─── Detail Modal ───────────────────────────────────────────────────────── -->
+@if (selectedMovie()) {
+  <app-detail
+    [movie]="selectedMovie()!"
+    [contentType]="getDetailType(selectedMovie()!)"
+    (closed)="selectedMovie.set(null)"
+  />
+}

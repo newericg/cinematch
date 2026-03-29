@@ -24,6 +24,11 @@
         class="font-medium text-[10px] tracking-widest uppercase transition-colors duration-300 text-slate-500 hover:text-slate-200"
       >Início</a>
       <a
+        routerLink="/discover"
+        routerLinkActive="text-[#e8b86d]"
+        class="font-medium text-[10px] tracking-widest uppercase transition-colors duration-300 text-slate-500 hover:text-slate-200"
+      >Descobrir</a>
+      <a
         routerLink="/watchlist"
         routerLinkActive="text-[#e8b86d]"
         class="font-medium text-[10px] tracking-widest uppercase transition-colors duration-300 text-slate-500 hover:text-slate-200 flex items-center gap-1.5"
@@ -78,7 +83,7 @@
       </p>
     </div>
     <nav class="flex gap-8">
-      <a routerLink="/" class="font-sans text-xs font-light tracking-widest uppercase text-slate-600 hover:text-slate-300 underline underline-offset-4 transition-all">Descobrir</a>
+      <a routerLink="/discover" class="font-sans text-xs font-light tracking-widest uppercase text-slate-600 hover:text-slate-300 underline underline-offset-4 transition-all">Descobrir</a>
       <a routerLink="/watchlist" class="font-sans text-xs font-light tracking-widest uppercase text-slate-600 hover:text-slate-300 underline underline-offset-4 transition-all">Watchlist</a>
     </nav>
   </div>
@@ -88,7 +93,7 @@
 <nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-4 pt-3 bg-[#111319]/80 backdrop-blur-xl z-50 border-t border-white/5">
   <a
     routerLink="/"
-    routerLinkActive="text-[#e8b86d] border-t-2 border-[#e8b86d]"
+    routerLinkActive="text-[#e8b86d]"
     [routerLinkActiveOptions]="{ exact: true }"
     class="flex flex-col items-center justify-center pt-2 text-slate-500 hover:text-slate-200 transition-all"
   >
@@ -96,8 +101,16 @@
     <span class="font-sans text-[9px] font-medium uppercase tracking-tighter">Início</span>
   </a>
   <a
+    routerLink="/discover"
+    routerLinkActive="text-[#e8b86d]"
+    class="flex flex-col items-center justify-center pt-2 text-slate-500 hover:text-slate-200 transition-all"
+  >
+    <span class="ms-icon mb-1 text-[22px]">explore</span>
+    <span class="font-sans text-[9px] font-medium uppercase tracking-tighter">Descobrir</span>
+  </a>
+  <a
     routerLink="/watchlist"
-    routerLinkActive="text-[#e8b86d] border-t-2 border-[#e8b86d]"
+    routerLinkActive="text-[#e8b86d]"
     class="flex flex-col items-center justify-center pt-2 text-slate-500 hover:text-slate-200 transition-all relative"
   >
     <span class="ms-icon mb-1 text-[22px]">bookmark</span>

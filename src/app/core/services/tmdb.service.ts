@@ -24,6 +24,14 @@ export class TmdbService {
   private readonly http = inject(HttpClient);
   private readonly base = environment.tmdbBaseUrl;
 
+  // ─── Trending ───────────────────────────────────────────────────────────────
+
+  getTrending(type: 'all' | 'movie' | 'tv' = 'movie', timeWindow: 'day' | 'week' = 'week'): Observable<Movie[]> {
+    return this.http
+      .get<PaginatedResponse<Movie>>(`${this.base}/trending/${type}/${timeWindow}`)
+      .pipe(map(r => r.results));
+  }
+
   // ─── Discover ───────────────────────────────────────────────────────────────
 
   discoverByGenres(

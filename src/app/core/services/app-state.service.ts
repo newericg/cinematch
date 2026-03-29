@@ -66,9 +66,21 @@ export class AppStateService {
     this._state.update(s => ({ ...s, error, loading: false }));
   }
 
-  // ─── Gemini ────────────────────────────────────────────────────────────────
-  private readonly _geminiGreeting    = signal<string>('');
-  private readonly _geminiSuggestions = signal<GeminiSuggestion[]>([]);
+  // ─── Gemini (persisted to localStorage) ───────────────────────────────────
+  private readonly GEMINI_KEY = 'cinematch_gemini';
+
+  private loadGemini(): GeminiResponse {
+    try {
+      const raw = localStorage.getItem(this.GEMINI_KEY);
+      return raw ? (JSON.parse(raw) as GeminiResponse) : { greeting: '', suggestions: [] };
+    } catch {
+      return { greeting: '', suggestions: [] };
+    }
+  }
+
+  private readonly _cached               = this.loadGemini();
+  private readonly _geminiGreeting       = signal<string>(this._cached.greeting);
+  private readonly _geminiSuggestions    = signal<GeminiSuggestion[]>(this._cached.suggestions);
 
   readonly geminiGreeting    = this._geminiGreeting.asReadonly();
   readonly geminiSuggestions = this._geminiSuggestions.asReadonly();
@@ -76,5 +88,14 @@ export class AppStateService {
   setGeminiResponse(response: GeminiResponse): void {
     this._geminiGreeting.set(response.greeting);
     this._geminiSuggestions.set(response.suggestions);
+    try {
+      localStorage.setItem(this.GEMINI_KEY, JSON.stringify(response));
+    } catch { /* noop */ }
+  }
+
+  clearGeminiResponse(): void {
+    this._geminiGreeting.set('');
+    this._geminiSuggestions.set([]);
+    try { localStorage.removeItem(this.GEMINI_KEY); } catch { /* noop */ }
   }
 }

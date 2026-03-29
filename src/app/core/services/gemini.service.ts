@@ -15,7 +15,7 @@ export class GeminiService {
   private readonly http = inject(HttpClient);
 
   private get endpoint(): string {
-    return `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${environment.geminiApiKey}`;
+    return `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${environment.geminiApiKey}`;
   }
 
   getSuggestions(profile: UserProfile): Observable<GeminiResponse> {

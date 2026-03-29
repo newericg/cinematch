@@ -1,5 +1,6 @@
 export const environment = {
-  production: true,
-  tmdbBaseUrl: 'https://api.themoviedb.org/3',
+  production:    true,
+  tmdbApiKey:    'COLOQUE_SUA_CHAVE_AQUI',
+  tmdbBaseUrl:   'https://api.themoviedb.org/3',
   tmdbImageBase: 'https://image.tmdb.org/t/p',
 };
